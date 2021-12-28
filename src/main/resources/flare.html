@@ -1,0 +1,124 @@
+<!--
+This widget uses D3.js (https://d3js.org/) JavaScript libraries to generate pretty
+explorer.WordTree visualizations. It has been adapted from:
+ • "Radial Tidy Tree" by Herman Sontrop:
+    https://bl.ocks.org/FrissAnalytics/ffbd3cb71848616957cd4c0f41738aec
+ • "d3-svg-to-png" by Juan Irache
+    https://github.com/JuanIrache/d3-svg-to-png
+-->
+
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Anagrams</title>
+</head>
+
+<style>
+
+    .slider {
+    	-webkit-appearance: none;
+    	width: 50%;
+    	height: 20px;
+    	background: #d3d3d3;
+    	outline: none;
+    	opacity: 0.7;
+    	-webkit-transition: .2s;
+    	transition: opacity .2s;
+    }
+
+    .slider:hover {	opacity: 1; }
+
+    .slider::-webkit-slider-thumb {
+    	-webkit-appearance: none;
+    	appearance: none;
+    	width: 20px;
+    	height: 20px;
+    	background: #4CAF50;
+    }
+
+    .node circle { fill: #999; }
+    .node--internal circle { fill: #555; }
+
+    .link {
+    	fill: none;
+    	stroke: #444;
+    	stroke-opacity: 0.3;
+    }
+
+    .container { position: relative; }
+
+    .container button {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        top: 5px;
+        left: 5px;
+        background-color: #DDD;
+        color: black;
+        font-size: 24px;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    #zoom_out { top: 40px; }
+
+</style>
+
+<body>
+
+<!-- Controls -->
+<table style="width: 80%">
+    <tr>
+        <td style="width: 120px">
+            <button id='saveButton'>Save as PNG</button>
+            <button id='editButton'>Edit</button>
+        </td>
+        <td style="width: 400px">
+            <input type="radio" id="words" name = "text" checked="checked">
+            <label for="words">Display Words</label>
+            <input type="radio" id="steals" name = "text">
+            <label for="steals">Display Steals</label>
+            <input type="checkbox" id="playability">
+            <label for="playability">Show playability</label>
+        </td>
+    </tr>
+</table>
+
+<!-- Editor tools -->
+<table id="editorTools" style="display: none">
+    <colgroup>
+        <col style="width: 80px;">
+        <col style="width: 700px;">
+    </colgroup>
+    <tr>
+        <td>Image size</td>
+        <td><input type="range" min="1" max="100" value="33" class="slider" id="sizeslider" onchange="resizeImage();"></td>
+    </tr>
+    <tr>
+        <td>Radius</td>
+        <td><input type="range" min="1" max="100" value="24" class="slider" id="radslider" onchange="setRadius();"></td>
+    </tr>
+    <tr>
+        <td>Font size</td>
+        <td><input type="range" min="1" max="50" value="12" class="slider" id="fontslider" onchange="setFontSize();"></td>
+    </tr>
+    <tr>
+        <td>Angle</td>
+        <td><input type="range" min="1" max="100" value="72" class="slider" id="angleslider" onchange="setAngle();"> </td>
+    </tr>
+</table>
+
+<!-- SVG Display -->
+
+<div class = "container">
+    <svg style="background-color:aliceblue"></svg>
+    <button id="zoom_in">+</button>
+    <button id="zoom_out">&minus;</button>
+
+</div>
+
+<script type="text/javascript" src ="d3.v6.min.js"></script>
+<script type="text/javascript" src="flare.js"></script>
+
+</body>

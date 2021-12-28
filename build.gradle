@@ -1,0 +1,48 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.javamodularity.moduleplugin' version '1.8.10'
+    id 'org.beryx.jlink' version '2.24.4'
+    id 'org.openjfx.javafxplugin' version '0.0.10'
+
+}
+
+application.mainModule ='WordExplorer'
+mainClassName = 'explorer.WordExplorer'
+
+repositories {
+    mavenCentral()
+}
+
+javafx {
+    version = '17'
+    modules = ['javafx.base', 'javafx.controls', 'javafx.web']
+}
+
+dependencies {
+    implementation 'org.json:json:20210307'
+}
+
+jlink {
+
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    launcher {
+        name = 'WordExplorer'
+    }
+
+    jpackage {
+        imageOptions += ['--icon', 'src/main/resources/wordex.ico']
+        installerOptions += [
+            '--type', "msi",
+            '--resource-dir', "src/main/resources",
+            '--app-version', '1.0',
+            '--copyright', '© 2022 Christopher Grubb',
+            '--vendor', 'Christopher Grubb',
+            '--win-dir-chooser',
+            '--win-menu',
+            '--win-shortcut',
+            '--win-upgrade-uuid', '6389a7b1-2510-4016-99c7-53bb616e5d6d'
+        ]
+
+    }
+}
