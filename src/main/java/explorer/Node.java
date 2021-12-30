@@ -1,7 +1,6 @@
 package explorer;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.TreeMap;
 
 /**
@@ -12,7 +11,6 @@ import java.util.TreeMap;
 
 public class Node {
 
-    final HashSet<String> anagrams = new HashSet<>(2);
     final HashMap<String, String> definitions = new HashMap<>(2);
 
     final TreeMap<Character, Node> children = new TreeMap<>();

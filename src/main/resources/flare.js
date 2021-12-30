@@ -12,7 +12,7 @@ window.onerror = function(msg, url, linenumber) {
     return true;
 }
 
-document.getElementById("radslider").value = 24;
+document.getElementById("radslider").value = 16;
 document.getElementById("fontslider").value = 12;
 document.getElementById("angleslider").value = 72;
 
@@ -31,7 +31,7 @@ let data,
     g = svg.append("g"),
     depth = 0,
     angle = 360,
-    radius = 240;
+    radius = 160;
 
 d3.select("#zoom_in").on("click", function() {
    zoom.scaleBy(svg.transition().duration(600), 1.15);
@@ -48,9 +48,11 @@ document.getElementById('steals').onclick = function () {
 }
 
 document.getElementById('playability').onclick = function () {
+    zoomState = g.attr("transform");
     svg.selectAll("*").remove();
     g = svg.append("g");
     display(data);
+    g.attr("transform", zoomState);
 }
 
 document.getElementById('words').onclick = function () {
@@ -71,7 +73,7 @@ document.getElementById('editButton').onclick = function () {
 
 function init(json) {
 
-    data = JSON.parse(json.replace(/\\/g, '&#92;').replace(/ "([\w ]+)"/g, ' \\"$1\\"'));
+    data = JSON.parse(json);
 
     for(const value of data.values()) {
         count = 0;
@@ -127,7 +129,6 @@ function display(d) {
             }
             else return 1.5;
         });
-//        .attr("stroke-width", d => Math.max(Math.log2(d.data.prob), 1));
 
     const node = g.selectAll(".node").data(root.descendants()).enter().append("g")
         .attr("class", d => "node" + (d.children ? " node--internal" : " node--leaf"))

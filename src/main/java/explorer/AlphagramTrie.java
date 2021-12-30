@@ -2,6 +2,7 @@ package explorer;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Stores a list of words as a trie data structure for fast lookup.
@@ -37,8 +38,7 @@ public class AlphagramTrie {
             for(String stringRead = reader.readLine(); stringRead != null; stringRead = reader.readLine()) {
                 String[] entry = stringRead.split("\\s+", 2);
                 currentWord = entry[0].toUpperCase();
-                if(entry.length > 1)
-                    currentDefinition = entry[1];
+                currentDefinition = entry.length > 1 ? entry[1] : null;
                 insertWord(alphabetize(currentWord), rootNode);
             }
             System.out.println("new trie created with lexicon = " + lexicon);
@@ -76,7 +76,6 @@ public class AlphagramTrie {
 
         //This node is the end of a word. Store the original word and its definition here.
         if (subalphagram.length() == 1) {
-            nextChild.anagrams.add(currentWord);
             nextChild.definitions.put(currentWord, currentDefinition);
         }
         else {
@@ -97,7 +96,7 @@ public class AlphagramTrie {
 
         if(getNode(searchKey) != null) {
             //A node has been found with the same alphagram as the searchKey
-            for(String anagram : node.anagrams) {
+            for(String anagram : node.definitions.keySet()) {
                 if(searchKey.toUpperCase().equals(anagram)) {
                     return true; //the node contains the word
                 }
@@ -137,10 +136,10 @@ public class AlphagramTrie {
 
     public String getDefinition(String searchKey) {
         Node node = getNode(searchKey);
-        if(node != null)
+        if(node != null) {
             return node.definitions.get(searchKey.toUpperCase());
-        else
-            return null;
+        }
+        return null;
     }
 
     /**

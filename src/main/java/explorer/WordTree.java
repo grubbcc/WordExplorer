@@ -1,8 +1,5 @@
 package explorer;
 
-import explorer.AlphagramTrie;
-import explorer.Node;
-import explorer.ProbCalc;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -81,7 +78,7 @@ public class WordTree {
 
         //If the node's path already contains all characters to be found, then automatically add its descendants to the node list
         else {
-            for(String anagram : node.anagrams) {
+            for(String anagram : node.definitions.keySet()) {
                 if(anagram.length() > rootWord.length()) {	 //This prevents the node list from including the node of the search key itself
                     treeNodeList.add(new TreeNode(anagram, otherCharsFound));
                 }
@@ -107,10 +104,8 @@ public class WordTree {
 
         for (TreeNode nextNode : treeNodeList) {
             String nextWord = nextNode.getWord();
-            //        System.out.println(currentWord + " " + nextWord);
             if (isSteal(nextWord, currentWord)) {
                 nextNode.addChild(currentNode);
-                //          System.out.println(nextWord);
                 return;
             }
         }
@@ -160,7 +155,9 @@ public class WordTree {
         jsonObject.put("shortsteal", node.getShortSteal());
         jsonObject.put("longsteal", node.getLongSteal());
         jsonObject.put("prob", ProbCalc.round(node.getProb(),0));
-        jsonObject.put("def", trie.getDefinition(node.getWord()));
+        if(trie.getDefinition(node.getWord()) != null ) {
+            jsonObject.put("def", trie.getDefinition(node.getWord()).replaceAll("\\\\", "&#92;").replaceAll("'", "&#39;").replaceAll("\"", "&quot;"));
+        }
         data.put(jsonObject);
 
         for (TreeNode child : node.getChildren()) {

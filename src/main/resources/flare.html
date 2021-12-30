@@ -17,7 +17,7 @@ explorer.WordTree visualizations. It has been adapted from:
 
     .slider {
     	-webkit-appearance: none;
-    	width: 50%;
+        width: 420px;
     	height: 20px;
     	background: #d3d3d3;
     	outline: none;
@@ -36,14 +36,17 @@ explorer.WordTree visualizations. It has been adapted from:
     	background: #4CAF50;
     }
 
-    .node circle { fill: #999; }
-    .node--internal circle { fill: #555; }
-
-    .link {
-    	fill: none;
-    	stroke: #444;
-    	stroke-opacity: 0.3;
+    .controls {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        display: inline-flex;
+        font-size: 16px;
     }
+    .controls > * { padding-right: 5px; }
+    .radio { padding-left: 5px; }
+    .checkbox { padding-left: 15px; }
+
 
     .container { position: relative; }
 
@@ -61,6 +64,15 @@ explorer.WordTree visualizations. It has been adapted from:
         text-align: center;
     }
 
+    .node circle { fill: #999; }
+    .node--internal circle { fill: #555; }
+
+    .link {
+    	fill: none;
+    	stroke: #444;
+    	stroke-opacity: 0.3;
+    }
+
     #zoom_out { top: 40px; }
 
 </style>
@@ -68,36 +80,41 @@ explorer.WordTree visualizations. It has been adapted from:
 <body>
 
 <!-- Controls -->
-<table style="width: 80%">
-    <tr>
-        <td style="width: 120px">
-            <button id='saveButton'>Save as PNG</button>
-            <button id='editButton'>Edit</button>
-        </td>
-        <td style="width: 400px">
-            <input type="radio" id="words" name = "text" checked="checked">
-            <label for="words">Display Words</label>
-            <input type="radio" id="steals" name = "text">
-            <label for="steals">Display Steals</label>
-            <input type="checkbox" id="playability">
-            <label for="playability">Show playability</label>
-        </td>
-    </tr>
-</table>
+<ul class="controls">
+    <li class="button">
+        <button id='saveButton'>Save as PNG</button>
+    </li>
+
+    <li class="button">
+        <button id='editButton'>Edit</button>
+    </li>
+
+    <li class="radio">
+        <input id="words" type="radio" name="display" checked="checked">
+        <label for="words">Show words</label>
+    </li>
+
+    <li class="radio">
+        <input id="steals" type="radio" name="display">
+        <label for="steals">Show steals</label>
+    </li>
+
+    <li class="checkbox">
+        <input id="playability" type="checkbox">
+        <label for="playability">Show playability</label>
+    </li>
+</ul>
 
 <!-- Editor tools -->
 <table id="editorTools" style="display: none">
-    <colgroup>
-        <col style="width: 80px;">
-        <col style="width: 700px;">
-    </colgroup>
+
     <tr>
         <td>Image size</td>
         <td><input type="range" min="1" max="100" value="33" class="slider" id="sizeslider" onchange="resizeImage();"></td>
     </tr>
     <tr>
         <td>Radius</td>
-        <td><input type="range" min="1" max="100" value="24" class="slider" id="radslider" onchange="setRadius();"></td>
+        <td><input type="range" min="1" max="100" value="16" class="slider" id="radslider" onchange="setRadius();"></td>
     </tr>
     <tr>
         <td>Font size</td>
@@ -110,7 +127,6 @@ explorer.WordTree visualizations. It has been adapted from:
 </table>
 
 <!-- SVG Display -->
-
 <div class = "container">
     <svg style="background-color:aliceblue"></svg>
     <button id="zoom_in">+</button>

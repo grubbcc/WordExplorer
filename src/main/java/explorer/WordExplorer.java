@@ -14,10 +14,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -145,16 +148,14 @@ public class WordExplorer extends Application {
         treeView.setCellFactory(tv -> new CustomTreeCell());
         treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldItem, newItem) -> {
             if(newItem != null) {
-                String definition = tree.trie.getDefinition(newItem.getValue().getWord());
-                messagePane.setText(Objects.requireNonNullElse(definition, "Definition not available"));
+                messagePane.setText(Objects.requireNonNullElse(tree.trie.getDefinition(newItem.getValue().getWord()), "Definition not available"));
             }
         });
         setUpTree(root, 100);
 
         treePanel.getChildren().add(treeView);
 
-        String definition = tree.trie.getDefinition(query);
-        messagePane.setText(Objects.requireNonNullElse(definition, "Definition not available"));
+        messagePane.setText(Objects.requireNonNullElse(tree.trie.getDefinition(query),"Definition not available"));
 
         if(!tree.rootNode.getChildren().isEmpty()) {
             treeSummaryScrollPane.setContent(treeSummary(counts));
@@ -334,17 +335,9 @@ public class WordExplorer extends Application {
         WebEngine webEngine = browser.getEngine();
         webEngine.setJavaScriptEnabled(true);
         webEngine.load(getClass().getResource("/flare.html").toExternalForm());
-        webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
 
-            if (newState == Worker.State.SUCCEEDED) {
-                webEngine.executeScript("init('" + tree.data.toString().replaceAll("'", "\\\\'") + "');");
-            }
-        });
-
+        Scene scene = new Scene(browser);
         Stage dialog = new Stage();
-        dialog.setTitle(tree.rootWord);
-        Scene scene = new Scene(browser, 800, 800);
-        dialog.setScene(scene);
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN), dialog::close);
         scene.setOnKeyTyped(event -> {
             if(event.getCode() == KeyCode.ESCAPE) {
@@ -352,8 +345,38 @@ public class WordExplorer extends Application {
             }
         });
 
+        AtomicReference<Double> width = new AtomicReference<>((double) 0);
+        AtomicReference<Double> height = new AtomicReference<>((double) 0);
+
+
+        webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
+            if (newState == Worker.State.SUCCEEDED) {
+                webEngine.executeScript("init('" + tree.data + "');");
+
+                String widthText = webEngine.executeScript("document.querySelector('svg').getBoundingClientRect().width;").toString();
+                String heightText = webEngine.executeScript("document.querySelector('svg').getBoundingClientRect().height;").toString();
+
+                width.set(Double.parseDouble(widthText.replace("px", "")));
+                height.set(Double.parseDouble(heightText.replace("px", "")));
+
+                browser.setMaxSize(Screen.getPrimary().getVisualBounds().getWidth(),Screen.getPrimary().getVisualBounds().getHeight() - 50);
+                browser.setPrefSize(width.get() + 50, height.get() + 100);
+
+/*                    const rect = g.node().getBoundingClientRect();
+                svg.attr("width", Math.min(Math.max(500, rect.width), 1000));
+                svg.attr("height", Math.min(Math.max(500, rect.height), 1000));
+                svg.attr("viewBox", [rect.x - 50, rect.y - 50, rect.width + 100, rect.height + 100]);*/
+                dialog.show();
+            }
+
+
+        });
+        dialog.setTitle(tree.rootWord);
+        dialog.setScene(scene);
+
+
+
         webEngine.setOnAlert(event -> {
-            System.out.println(event.getData());
             byte[] decodedBytes = Base64.getMimeDecoder().decode(((event.getData().split(",")[1]).getBytes()));
 
             FileChooser fileChooser = new FileChooser();
@@ -370,7 +393,13 @@ public class WordExplorer extends Application {
             }
         });
 
-        dialog.show();
+
+
+
+        System.out.println("svg: " +width.get() + ", " + height.get());
+        System.out.println("browser: " + browser.getWidth() + ", " + browser.getHeight());
+        System.out.println("scene: " + scene.getWidth() + ", " + scene.getHeight());
+        System.out.println("stage: " + stage.getWidth() + ", " + stage.getHeight());
     }
 
     /**
